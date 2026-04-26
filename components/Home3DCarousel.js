@@ -25,6 +25,10 @@ export function Home3DCarousel({ items }) {
     let dragDistance = 0;
     let startX = 0;
     let startProgress = 0;
+    let lastDragX = 0;
+    let lastDragTs = 0;
+    let dragVelocity = 0;
+    let momentumTween = null;
 
     let panelWidthPx = 140;
     let panelHeightPx = 420;
@@ -62,6 +66,11 @@ export function Home3DCarousel({ items }) {
       renderRotation();
     };
 
+    const stopMomentum = () => {
+      momentumTween?.kill();
+      momentumTween = null;
+    };
+
     applyPanelLayout();
     renderRotation();
 
@@ -70,12 +79,41 @@ export function Home3DCarousel({ items }) {
       type: "x",
       allowNativeTouchScrolling: true,
       onPress() {
+        stopMomentum();
         startX = this.x;
         startProgress = progress;
+        lastDragX = this.x;
+        lastDragTs = performance.now();
+        dragVelocity = 0;
       },
       onDrag() {
+        const now = performance.now();
+        const elapsed = Math.max(16, now - lastDragTs);
+        const moved = this.x - lastDragX;
+        dragVelocity = moved / elapsed;
+        lastDragX = this.x;
+        lastDragTs = now;
+
         const delta = (startX - this.x) / dragDistance;
         setProgress(startProgress + delta);
+      },
+      onRelease() {
+        const minVelocity = 0.0055;
+        if (Math.abs(dragVelocity) < minVelocity) return;
+
+        const state = { velocity: dragVelocity };
+        momentumTween = gsap.to(state, {
+          velocity: 0,
+          duration: 1.8,
+          ease: "power2.out",
+          onUpdate() {
+            const frameStep = (state.velocity * 24) / dragDistance;
+            setProgress(progress - frameStep);
+          },
+          onComplete() {
+            momentumTween = null;
+          },
+        });
       },
     })[0];
 
@@ -83,6 +121,7 @@ export function Home3DCarousel({ items }) {
       target: wrap,
       type: "wheel,touch",
       onChangeY: (self) => {
+        stopMomentum();
         setProgress(progress + self.deltaY * 0.00035);
       },
     });
@@ -107,6 +146,7 @@ export function Home3DCarousel({ items }) {
       draggable?.kill();
       observer?.kill();
       sizeObserver.disconnect();
+      stopMomentum();
       window.removeEventListener("resize", onResize);
       clearTimeout(resizeTimer);
     };
@@ -119,7 +159,7 @@ export function Home3DCarousel({ items }) {
           <div
             key={item.id}
             data-3d-carousel-panel
-            className={`img-carousel__panel${index % 2 === 1 ? " is-even" : ""}`}
+            className={`img-carousel__panel${index % 2 === 0 ? " is-lower" : ""}`}
           >
             <div data-3d-carousel-content className="img-carousel__item">
               <img src={item.poster} alt={item.title} className="img-carousel__img" />

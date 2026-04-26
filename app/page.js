@@ -22,7 +22,7 @@ export default async function Home() {
 
   return (
     <div className="gmdb-container">
-      <div className="welcome-message">
+      <div className="welcome-message text-center">
         Search for your
         <br /> favorite movies!
       </div>
