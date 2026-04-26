@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-export function SearchBar() {
+export function SearchBar({ intro = false }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -26,7 +26,7 @@ export function SearchBar() {
   }
 
   return (
-    <form className="search-form" onSubmit={submitSearch}>
+    <form className={`search-form${intro ? " search-form--intro" : ""}`} onSubmit={submitSearch}>
       <input
         type="text"
         name="q"

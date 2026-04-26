@@ -1,10 +1,13 @@
+import Link from "next/link";
 import { MovieHeroPane } from "@/components/MovieHeroPane";
 import { MovieRecommendationsStrip } from "@/components/MovieRecommendationsStrip";
 import {
   directorsFromCrew,
+  directorsFromCrewList,
   genreNames,
   topCastList,
   writersFromCrew,
+  writersFromCrewList,
 } from "@/lib/movieFacts";
 import { fetchOmdbByImdbId, parseOmdbRatings } from "@/lib/omdb";
 import { getMovieByTmdbId } from "@/lib/tmdb";
@@ -30,6 +33,8 @@ export default async function Movie({ params }) {
   const genres = genreNames(movie.genres);
   const director = directorsFromCrew(movie.credits?.crew);
   const writers = writersFromCrew(movie.credits?.crew);
+  const directorPeople = directorsFromCrewList(movie.credits?.crew);
+  const writerPeople = writersFromCrewList(movie.credits?.crew);
   const cast = topCastList(movie.credits?.cast, 10);
   const recommendations = Array.isArray(movie.recommendations?.results)
     ? movie.recommendations.results.slice(0, 10)
@@ -63,21 +68,44 @@ export default async function Movie({ params }) {
           <h2 className="text-2xl font-bold">Overview</h2>
           {movie.overview ? (
             <p className="text-sm text-gray-300 mx-[5vw] lg:mx-0">
-              <span className="font-semibold text-gray-400">Overview</span>{" "}
               {movie.overview}
             </p>
           ) : null}
           <div className="w-auto mt-3 mx-[6vw] lg:mx-3 self-start flex flex-col items-start justify-start text-left">
             {director ? (
               <p className="text-sm text-gray-300">
-                <span className="font-semibold text-gray-400">Director</span>{" "}
-                {director}
+                <span className="font-semibold text-gray-400">Director:</span>{" "}
+                {directorPeople.length > 0
+                  ? directorPeople.map((person, index) => (
+                      <span key={person.id}>
+                        {index > 0 ? ", " : ""}
+                        <Link
+                          href={`/person/${person.id}`}
+                          className="text-gray-300 hover:text-white"
+                        >
+                          {person.name}
+                        </Link>
+                      </span>
+                    ))
+                  : director}
               </p>
             ) : null}
             {writers ? (
               <p className="text-sm text-gray-300">
-                <span className="font-semibold text-gray-400">Writer</span>{" "}
-                {writers}
+                <span className="font-semibold text-gray-400">Writer:</span>{" "}
+                {writerPeople.length > 0
+                  ? writerPeople.map((person, index) => (
+                      <span key={person.id}>
+                        {index > 0 ? ", " : ""}
+                        <Link
+                          href={`/person/${person.id}`}
+                          className="text-gray-300 hover:text-white"
+                        >
+                          {person.name}
+                        </Link>
+                      </span>
+                    ))
+                  : writers}
               </p>
             ) : null}
           </div>

@@ -121,7 +121,16 @@ nav {
   justify-content: space-between;
   align-items: start;
   z-index: 1;
+}
+
+.nav--intro {
   animation: shrink-up 2.5s ease;
+}
+
+@media (max-width: 375px) {
+  .nav--intro {
+    animation: shrink-up-small 2.5s ease;
+  }
 }
 
 @keyframes shrink-up {
@@ -151,7 +160,7 @@ nav {
 }
 
 .logo {
-  color: #0b0800;
+  color: rgb(255, 254, 254);
   font-size: 44px;
   font-weight: 900;
   text-decoration: underline;
@@ -160,10 +169,16 @@ nav {
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 1;
+  text-shadow: 0px 0px 4px rgb(223, 86, 0);
+  transform-origin: top left;
+}
+
+.logo--intro {
+  color: #0b0800;
   opacity: 0;
   text-shadow: 0 0 3px rgb(223, 86, 0);
   transform: scale(2.9);
-  transform-origin: top left;
   animation:
     fade-in 200ms ease forwards,
     flicker 1s linear forwards,
@@ -269,6 +284,10 @@ nav {
 }
 
 .search-form > * {
+  opacity: 1;
+}
+
+.search-form--intro > * {
   opacity: 0;
   animation: fade-in 2s 2s ease forwards;
 }
@@ -403,7 +422,9 @@ nav {
   opacity: 0;
   margin-top: 56px;
   font-size: 48px;
-  animation: fade-in-up 2s 1.3s forwards, flicker 800ms 1.6s ease;
+  animation:
+    fade-in-up 2s 1.3s forwards,
+    flicker 800ms 1.6s ease;
 }
 
 @keyframes fade-in-up {
@@ -425,7 +446,9 @@ nav {
   top: 60px;
   font-size: 44px;
   right: calc(5vw + 184px);
-  animation: fade-in-up 1.5s 2.3s forwards, bounce 1s 3.8s linear infinite;
+  animation:
+    fade-in-up 1.5s 2.3s forwards,
+    bounce 1s 3.8s linear infinite;
 }
 
 @keyframes bounce {
@@ -475,13 +498,14 @@ nav {
   align-items: center;
   justify-content: space-between;
   opacity: 1;
-  transition: opacity 0.3s, transform 0.3s ease-in-out;
+  transition:
+    opacity 0.3s,
+    transform 0.3s ease-in-out;
   transform: scale(1) translateZ(0);
   transform-origin: center center;
   backface-visibility: hidden;
   will-change: transform;
   animation: borderColorLoop 2s linear infinite;
-  
 }
 
 .movie:hover {
@@ -489,29 +513,46 @@ nav {
 }
 
 .movie.fade-in {
-  animation: borderColorLoop 2s linear infinite, fade-in 1.5s ease;
+  animation:
+    borderColorLoop 2s linear infinite,
+    fade-in 1.5s ease;
   opacity: 1;
 }
 
 @keyframes borderColorLoop {
   0% {
-    box-shadow: 0 -2px 0px 0 white, 2px 0 0px 0 rgb(255, 229, 185), 0 2px 0px 0 rgb(255, 202, 110),
+    box-shadow:
+      0 -2px 0px 0 white,
+      2px 0 0px 0 rgb(255, 229, 185),
+      0 2px 0px 0 rgb(255, 202, 110),
       -2px 0 0px 0 rgb(255, 229, 185);
   }
   25% {
-    box-shadow: 0 -2px 0px 0 rgb(255, 229, 185), 2px 0 0px 0 white, 0 2px 0px 0 rgb(255, 229, 185),
+    box-shadow:
+      0 -2px 0px 0 rgb(255, 229, 185),
+      2px 0 0px 0 white,
+      0 2px 0px 0 rgb(255, 229, 185),
       -2px 0 0px 0 rgb(255, 202, 110);
   }
   50% {
-    box-shadow: 0 -2px 0px 0 rgb(255, 202, 110), 2px 0 0px 0 rgb(255, 229, 185), 0 2px 0px 0 white,
+    box-shadow:
+      0 -2px 0px 0 rgb(255, 202, 110),
+      2px 0 0px 0 rgb(255, 229, 185),
+      0 2px 0px 0 white,
       -2px 0 0px 0 rgb(255, 229, 185);
   }
   75% {
-    box-shadow: 0 -2px 0px 0 rgb(255, 229, 185), 2px 0 0px 0 rgb(255, 202, 110), 0 2px 0px 0 rgb(255, 229, 185),
+    box-shadow:
+      0 -2px 0px 0 rgb(255, 229, 185),
+      2px 0 0px 0 rgb(255, 202, 110),
+      0 2px 0px 0 rgb(255, 229, 185),
       -2px 0 0px 0 white;
   }
   100% {
-    box-shadow: 0 -2px 0px 0 white, 2px 0 0px 0 rgb(255, 229, 185), 0 2px 0px 0 rgb(255, 202, 110),
+    box-shadow:
+      0 -2px 0px 0 white,
+      2px 0 0px 0 rgb(255, 229, 185),
+      0 2px 0px 0 rgb(255, 202, 110),
       -2px 0 0px 0 rgb(255, 229, 185);
   }
 }
@@ -708,4 +749,3 @@ footer .logo {
     width: 100%;
   }
 }
-

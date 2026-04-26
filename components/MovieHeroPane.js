@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { posterSrc } from "@/lib/movieDisplay";
 
 export function MovieHeroPane({
@@ -84,7 +85,7 @@ export function MovieHeroPane({
           {title} ({year || "N/A"})
         </h1>
         {tagline ? (
-          <p className="text-sm italic text-gray-400 text-center mb-2">{tagline}</p>
+          <p className="text-sm italic text-gray-400 text-center mb-2 mx-3">{tagline}</p>
         ) : null}
         {genres.length > 0 ? (
           <p className="text-sm text-gray-300 text-center mb-1">{genres.join(" · ")}</p>
@@ -140,19 +141,44 @@ export function MovieHeroPane({
                       key={`${row.name}-${index}`}
                       className="min-w-0 mb-3 pr-4 w-1/2 [@media(min-width:500px)]:w-1/3 lg:w-1/3"
                     >
-                      <div className="w-[80px] bg-zinc-800 rounded-sm overflow-hidden mb-1">
-                        <img
-                          src={posterSrc(row.profilePath)}
-                          alt={row.name || "Cast member"}
-                          className={`block w-[80px] h-auto rounded-sm object-contain transition-opacity duration-200 ${
-                            allLoaded ? "opacity-100" : "opacity-0"
-                          }`}
-                        />
-                      </div>
-                      <span className="block font-medium text-gray-200">{row.name}</span>
-                      {row.character ? (
-                        <span className="block text-gray-500">{row.character}</span>
-                      ) : null}
+                      {row.id ? (
+                        <Link
+                          href={`/person/${row.id}`}
+                          className="flex flex-col justify-center items-center rounded-sm hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70"
+                        >
+                          <div className="w-[80px] bg-zinc-800 rounded-sm overflow-hidden mb-1">
+                            <img
+                              src={posterSrc(row.profilePath)}
+                              alt={row.name || "Cast member"}
+                              className={`block w-[80px] h-auto rounded-sm object-contain transition-opacity duration-200 ${
+                                allLoaded ? "opacity-100" : "opacity-0"
+                              }`}
+                            />
+                          </div>
+                          <span className="block font-medium text-gray-200 text-center hover:text-white">
+                            {row.name}
+                          </span>
+                          {row.character ? (
+                            <span className="block text-gray-500 text-center">{row.character}</span>
+                          ) : null}
+                        </Link>
+                      ) : (
+                        <>
+                          <div className="w-[80px] bg-zinc-800 rounded-sm overflow-hidden mb-1">
+                            <img
+                              src={posterSrc(row.profilePath)}
+                              alt={row.name || "Cast member"}
+                              className={`block w-[80px] h-auto rounded-sm object-contain transition-opacity duration-200 ${
+                                allLoaded ? "opacity-100" : "opacity-0"
+                              }`}
+                            />
+                          </div>
+                          <span className="block font-medium text-gray-200">{row.name}</span>
+                          {row.character ? (
+                            <span className="block text-gray-500">{row.character}</span>
+                          ) : null}
+                        </>
+                      )}
                     </li>
                   ))}
                 </ul>

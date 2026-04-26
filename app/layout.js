@@ -1,8 +1,8 @@
 import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
-import { Suspense } from "react";
-import { SearchBar } from "@/components/SearchBar";
+import { NavHeader } from "@/components/NavHeader";
+import { ScrollToTopOnRouteChange } from "@/components/ScrollToTopOnRouteChange";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,21 +32,13 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <ScrollToTopOnRouteChange />
         <Script
           src="https://kit.fontawesome.com/f92549a95d.js"
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
-        <nav>
-          <div className="nav-el max-w-[1240px] mx-auto">
-            <Link href="/" className="logo">
-              GMDB
-            </Link>
-            <Suspense fallback={<div className="search-form" />}>
-              <SearchBar />
-            </Suspense>
-          </div>
-        </nav>
+        <NavHeader />
         <div className="glowy-line" />
         <div className="side-bars">
           <div className="left-bar" />
