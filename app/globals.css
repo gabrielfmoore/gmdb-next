@@ -37,6 +37,8 @@
 html,
 body {
   background-color: #000;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -690,6 +692,70 @@ footer .logo {
   font-size: 12px;
 }
 
+.img-carousel__wrap {
+  justify-content: center;
+  align-items: center;
+  width: 80vw;
+  max-width: 920px;
+  height: min(52vw, 560px);
+  display: flex;
+  margin-top: 300px;
+  z-index: 1;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.img-carousel__list {
+  z-index: 1;
+  perspective: 90vw;
+  perspective-origin: 50%;
+  transform-style: preserve-3d;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 280px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  position: relative;
+  touch-action: pan-y;
+}
+
+.img-carousel__panel {
+  z-index: 0;
+  flex-direction: column;
+  flex: none;
+  justify-content: space-between;
+  align-items: stretch;
+  width: 12em;
+  height: 38em;
+  display: flex;
+  position: absolute;
+  user-select: none;
+}
+
+.img-carousel__panel.is-even {
+  justify-content: center;
+}
+
+.img-carousel__item {
+  aspect-ratio: 2 / 3;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #2a2a2a;
+}
+
+.img-carousel__img {
+  object-fit: cover;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  position: absolute;
+  inset: 0%;
+}
+
 @media (max-width: 1600px) {
   .movie {
     width: calc(20% - 26px);
@@ -720,6 +786,14 @@ footer .logo {
 @media (max-width: 480px) {
   .welcome-message {
     font-size: 36px;
+  }
+  .img-carousel__wrap {
+    margin-top: 150px;
+    height: 72vw;
+  }
+  .img-carousel__list {
+    width: 86vw;
+    height: 66vw;
   }
 }
 
