@@ -1,13 +1,9 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function SearchBar({ intro = false }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const currentQuery = searchParams.get("q") || "";
-  const currentSort = searchParams.get("sort") || "default";
 
   function submitSearch(event) {
     event.preventDefault();
@@ -17,7 +13,9 @@ export function SearchBar({ intro = false }) {
 
     if (!trimmed) return;
 
-    const nextParams = new URLSearchParams(searchParams.toString());
+    const currentParams = new URLSearchParams(window.location.search);
+    const currentSort = currentParams.get("sort") || "default";
+    const nextParams = new URLSearchParams(currentParams.toString());
     nextParams.delete("page");
     nextParams.set("q", trimmed);
     nextParams.set("sort", currentSort);
@@ -32,7 +30,6 @@ export function SearchBar({ intro = false }) {
         name="q"
         className="search-input text-black placeholder:text-gray-500"
         placeholder="Search movies..."
-        defaultValue={currentQuery}
       />
       <button type="submit" className="click text-black">
         Search
