@@ -30,7 +30,7 @@
     font-family: "Roboto", sans-serif;
     list-style-type: none;
     text-decoration: none;
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
   }
 }
 
@@ -132,14 +132,6 @@ nav {
 @media (max-width: 375px) {
   .nav--intro {
     animation: shrink-up-small 2.5s ease;
-  }
-}
-
-@media (max-width: 768px) {
-  /* Prevent mobile scroll lock/jank caused by animating nav height from 1200px. */
-  .nav--intro {
-    animation: none;
-    height: 68px;
   }
 }
 
