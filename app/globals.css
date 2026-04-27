@@ -91,6 +91,7 @@ body {
   width: 100%;
   max-width: none;
   min-height: calc(100vh - 64px);
+  min-height: calc(100dvh - 64px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -126,12 +127,12 @@ nav {
 }
 
 .nav--intro {
-  animation: shrink-up 2.5s ease;
+  animation: none;
 }
 
 @media (max-width: 375px) {
   .nav--intro {
-    animation: shrink-up-small 2.5s ease;
+    animation: none;
   }
 }
 
@@ -847,7 +848,6 @@ footer .logo {
 @media (max-width: 375px) {
   nav {
     height: 60px;
-    animation: shrink-up-small 2.5s ease;
   }
   .logo {
     font-size: 36px;
