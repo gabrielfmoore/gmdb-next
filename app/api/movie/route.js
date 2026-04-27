@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { fetchOmdbByImdbId, parseOmdbRatings } from "@/lib/omdb";
 import { getMovieByTmdbId } from "@/lib/tmdb";
 
 export async function GET(request) {
@@ -22,6 +23,8 @@ export async function GET(request) {
     const imdbIdFromTmdb = tmdbMovie.external_ids?.imdb_id;
     const imdbIdForImdbCom =
       typeof imdbIdFromTmdb === "string" && imdbIdFromTmdb.startsWith("tt") ? imdbIdFromTmdb : null;
+    const omdbJson = imdbIdForImdbCom ? await fetchOmdbByImdbId(imdbIdForImdbCom) : null;
+    const omdbRatings = parseOmdbRatings(omdbJson);
     return NextResponse.json({
       tmdbId: tmdbMovie.id,
       imdbID: imdbIdForImdbCom,
@@ -31,6 +34,8 @@ export async function GET(request) {
         ? `https://image.tmdb.org/t/p/w500${tmdbMovie.poster_path}`
         : "N/A",
       imdbRating: String(tmdbMovie.vote_average ?? 0),
+      rtRating: omdbRatings?.rt ?? null,
+      mcRating: omdbRatings?.meta ?? null,
       Ratings: [],
       overview: tmdbMovie.overview,
     });

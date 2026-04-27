@@ -29,6 +29,16 @@ function getSortValue(movie, sortType) {
   if (sortType === "tmdb" || sortType === "imdb") {
     return parseFloat(movie.imdbRating) || 0;
   }
+  if (sortType === "rt") {
+    const raw = typeof movie.rtRating === "string" ? movie.rtRating : "";
+    const score = Number.parseInt(raw.replace("%", ""), 10);
+    return Number.isFinite(score) ? score : -1;
+  }
+  if (sortType === "mc") {
+    const raw = typeof movie.mcRating === "string" ? movie.mcRating : "";
+    const score = Number.parseInt(raw.split("/")[0] || "", 10);
+    return Number.isFinite(score) ? score : -1;
+  }
   return 0;
 }
 
@@ -38,18 +48,15 @@ function SearchPageContent() {
 
   const query = searchParams.get("q") || "";
   const rawSort = searchParams.get("sort") || "default";
-  const sortType =
-    rawSort === "imdb" || rawSort === "tmdb"
-      ? "tmdb"
-      : rawSort === "rt" || rawSort === "mc"
-        ? "default"
-        : rawSort;
+  const sortType = rawSort === "imdb" || rawSort === "tmdb" ? "tmdb" : rawSort;
   const requestedPage = Number(searchParams.get("page") || "1");
 
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [imdbByTmdbId, setImdbByTmdbId] = useState({});
+  const [searchSettled, setSearchSettled] = useState(true);
+  const [showPagination, setShowPagination] = useState(false);
 
   useEffect(() => {
     let isCancelled = false;
@@ -58,9 +65,11 @@ function SearchPageContent() {
       if (!query.trim()) {
         setResults([]);
         setError("");
+        setSearchSettled(true);
         return;
       }
 
+      setSearchSettled(false);
       setLoading(true);
       setError("");
 
@@ -93,7 +102,13 @@ function SearchPageContent() {
         }
 
         if (!isCancelled) {
-          setResults(dedupeByTmdbId(stitchedSearchRows));
+          setResults(
+            dedupeByTmdbId(stitchedSearchRows).map((row) => ({
+              ...row,
+              rtRating: null,
+              mcRating: null,
+            })),
+          );
         }
       } catch (fetchError) {
         if (!isCancelled) {
@@ -101,7 +116,10 @@ function SearchPageContent() {
           setResults([]);
         }
       } finally {
-        if (!isCancelled) setLoading(false);
+        if (!isCancelled) {
+          setLoading(false);
+          setSearchSettled(true);
+        }
       }
     }
 
@@ -141,27 +159,40 @@ function SearchPageContent() {
     return sortedResults.slice(start, start + MOVIES_PER_PAGE);
   }, [currentPage, sortedResults]);
 
+  const shouldShowPagination =
+    !loading && searchSettled && !error && query.trim() && sortedResults.length > 0;
+
+  useEffect(() => {
+    if (!shouldShowPagination) {
+      setShowPagination(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowPagination(true), 180);
+    return () => clearTimeout(timer);
+  }, [shouldShowPagination]);
+
   useEffect(() => {
     let effectCancelled = false;
 
     async function hydrateImdbIds() {
-      const tmdbIdsMissingImdb = currentPageResults
+      const sourceRows = sortType === "rt" || sortType === "mc" ? results : currentPageResults;
+      const tmdbIdsNeedingDetails = sourceRows
         .map((movie) => movie.tmdbId)
-        .filter((tmdbId) => tmdbId != null && imdbByTmdbId[tmdbId] == null);
+        .filter((tmdbId) => tmdbId != null && imdbByTmdbId[tmdbId] === undefined);
 
-      if (tmdbIdsMissingImdb.length === 0) {
+      if (tmdbIdsNeedingDetails.length === 0) {
         return;
       }
 
-      const uniqueTmdbIds = [...new Set(tmdbIdsMissingImdb)];
-      const imdbIdByTmdbId = await Promise.all(
+      const uniqueTmdbIds = [...new Set(tmdbIdsNeedingDetails)];
+      const detailByTmdbId = await Promise.all(
         uniqueTmdbIds.map(async (tmdbId) => {
           try {
             const movieDetailResponse = await fetch(
               `/api/movie?id=${encodeURIComponent(String(tmdbId))}`,
             );
             if (!movieDetailResponse.ok) {
-              return { tmdbId, imdbTitleId: null };
+              return { tmdbId, imdbTitleId: null, rtRating: null, mcRating: null };
             }
             const movieDetailJson = await movieDetailResponse.json();
             const imdbTitleId =
@@ -169,9 +200,14 @@ function SearchPageContent() {
               movieDetailJson.imdbID.startsWith("tt")
                 ? movieDetailJson.imdbID
                 : null;
-            return { tmdbId, imdbTitleId };
+            return {
+              tmdbId,
+              imdbTitleId,
+              rtRating: movieDetailJson?.rtRating ?? null,
+              mcRating: movieDetailJson?.mcRating ?? null,
+            };
           } catch {
-            return { tmdbId, imdbTitleId: null };
+            return { tmdbId, imdbTitleId: null, rtRating: null, mcRating: null };
           }
         }),
       );
@@ -182,20 +218,31 @@ function SearchPageContent() {
 
       setImdbByTmdbId((previousByTmdbId) => {
         const merged = { ...previousByTmdbId };
-        for (const { tmdbId, imdbTitleId } of imdbIdByTmdbId) {
-          if (imdbTitleId) {
-            merged[tmdbId] = imdbTitleId;
-          }
+        for (const { tmdbId, imdbTitleId } of detailByTmdbId) {
+          merged[tmdbId] = imdbTitleId;
         }
         return merged;
       });
+
+      setResults((previousResults) =>
+        previousResults.map((movie) => {
+          const tmdbId = movie.tmdbId;
+          const details = detailByTmdbId.find((row) => row.tmdbId === tmdbId);
+          if (!details) return movie;
+          return {
+            ...movie,
+            rtRating: details.rtRating,
+            mcRating: details.mcRating,
+          };
+        }),
+      );
     }
 
     hydrateImdbIds();
     return () => {
       effectCancelled = true;
     };
-  }, [currentPageResults, imdbByTmdbId]);
+  }, [currentPageResults, imdbByTmdbId, results, sortType]);
 
   function setPage(nextPage) {
     const page = Math.min(Math.max(nextPage, 1), totalPages);
@@ -236,6 +283,8 @@ function SearchPageContent() {
         >
           <option value="default">Sort by...</option>
           <option value="tmdb">TMDB score (High to Low)</option>
+          <option value="rt">Rotten Tomatoes (High to Low)</option>
+          <option value="mc">Metacritic (High to Low)</option>
         </select>
       </div>
 
@@ -296,15 +345,17 @@ function SearchPageContent() {
                   </div>
                 </Link>
               ))}
-            {!loading && !error && query && currentPageResults.length === 0 && (
+            {!loading && searchSettled && !error && query && currentPageResults.length === 0 && (
               <div className="no-results">No results found. 😢</div>
             )}
           </div>
         </div>
 
         <div
-          className="pagination text-black"
-          style={{ display: sortedResults.length ? "flex" : "none" }}
+          className={`pagination text-black${showPagination ? " pagination--fade-in" : ""}`}
+          style={{
+            display: showPagination ? "flex" : "none",
+          }}
         >
           <button
             type="button"
