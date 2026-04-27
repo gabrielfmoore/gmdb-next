@@ -37,6 +37,7 @@
 html,
 body {
   height: 100%;
+  width: 100%;
   background-color: #000;
   overflow-x: hidden;
   overscroll-behavior-x: none;
@@ -65,12 +66,14 @@ body {
 }
 
 .side-bars {
-  position: absolute;
+  position: fixed;
+  inset: 0;
   width: 100%;
-  height: 100%;
+  height: 100dvh;
   display: flex;
   justify-content: space-between;
   pointer-events: none;
+  z-index: 0;
 }
 
 .left-bar,
@@ -422,7 +425,8 @@ nav {
 }
 
 .spinner-container {
-  left: 45%;
+  left: 50%;
+  transform: translateX(-50%);
   top: 25%;
   position: absolute;
   display: none;
