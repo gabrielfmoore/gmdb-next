@@ -135,6 +135,14 @@ nav {
   }
 }
 
+@media (max-width: 768px) {
+  /* Prevent mobile scroll lock/jank caused by animating nav height from 1200px. */
+  .nav--intro {
+    animation: none;
+    height: 68px;
+  }
+}
+
 @keyframes shrink-up {
   0% {
     height: 1200px;

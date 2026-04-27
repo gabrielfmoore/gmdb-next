@@ -19,8 +19,17 @@ export function MovieHeroPane({
 }) {
   const posterRef = useRef(null);
   const [posterHeight, setPosterHeight] = useState(null);
+  const [isSmUp, setIsSmUp] = useState(false);
   const [allLoaded, setAllLoaded] = useState(false);
   const imageUrls = [src, ...cast.map((row) => posterSrc(row.profilePath))];
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 640px)");
+    const sync = () => setIsSmUp(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     const posterElement = posterRef.current;
@@ -79,7 +88,7 @@ export function MovieHeroPane({
       </div>
       <div
         className="flex-1 min-w-0 flex flex-col"
-        style={posterHeight ? { height: `${posterHeight}px` } : undefined}
+        style={isSmUp && posterHeight ? { height: `${posterHeight}px` } : undefined}
       >
         <h1 className="text-2xl md:text-4xl font-bold text-center mb-2">
           {title} ({year || "N/A"})
