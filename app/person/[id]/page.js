@@ -74,7 +74,7 @@ export default async function PersonPage({ params }) {
 
   return (
     <main>
-      <div className="gmdb-container w-full text-white">
+      <div className="gmdb-container w-full text-white min-h-[calc(100vh-64px)]">
         <div className="flex flex-col justify-center items-center w-full max-w-4xl self-stretch mx-auto mt-4 px-4 sm:px-6">
           <PersonHeroPane imageSrc={imageSrc} name={name} roles={roles} bio={bio} />
 

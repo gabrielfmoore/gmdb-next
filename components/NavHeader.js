@@ -52,6 +52,7 @@ export function NavHeader() {
           <SearchBar intro={playIntro} />
         </Suspense>
       </div>
+      <div className="glowy-line" />
     </nav>
   );
 }

@@ -3,9 +3,8 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
-import { Observer } from "gsap/Observer";
 
-gsap.registerPlugin(Draggable, Observer);
+gsap.registerPlugin(Draggable);
 
 export function Home3DCarousel({ items }) {
   const wrapRef = useRef(null);
@@ -117,15 +116,6 @@ export function Home3DCarousel({ items }) {
       },
     })[0];
 
-    const observer = Observer.create({
-      target: wrap,
-      type: "wheel,touch",
-      onChangeY: (self) => {
-        stopMomentum();
-        setProgress(progress + self.deltaY * 0.00035);
-      },
-    });
-
     let resizeTimer = null;
     const onResize = () => {
       clearTimeout(resizeTimer);
@@ -144,7 +134,6 @@ export function Home3DCarousel({ items }) {
 
     return () => {
       draggable?.kill();
-      observer?.kill();
       sizeObserver.disconnect();
       stopMomentum();
       window.removeEventListener("resize", onResize);

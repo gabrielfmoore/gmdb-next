@@ -39,7 +39,6 @@ export default function RootLayout({ children }) {
           strategy="afterInteractive"
         />
         <NavHeader />
-        <div className="glowy-line" />
         <div className="side-bars">
           <div className="left-bar" />
           <div className="right-bar" />
