@@ -40,7 +40,17 @@ body {
   background-color: #000;
   overflow-x: hidden;
   overscroll-behavior-x: none;
+  /* Hide main window scrollbars; inner overflow regions keep their own */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
 }
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+ }
 
 body {
   position: relative;
@@ -380,9 +390,21 @@ nav {
   height: 32px;
   padding-left: 8px;
   font-size: 14px;
-  background-color: #d0cdc4;
-  display: none;
+  background-color: transparent;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   z-index: 1;
+}
+
+.sort-dropdown--fade-in {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  background-color: rgb(254, 248, 218);
+  color: #111;
+  animation: fade-in 0.7s ease;
 }
 
 .loading {
@@ -401,7 +423,7 @@ nav {
 
 .spinner-container {
   left: 45%;
-  top: 15%;
+  top: 25%;
   position: absolute;
   display: none;
   z-index: 100;
@@ -730,15 +752,21 @@ nav {
 }
 
 .pagination {
-  display: none;
+  display: flex;
   justify-content: center;
   align-items: center;
   margin: 16px 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   z-index: 1;
 }
 
 .pagination--fade-in {
-  animation: fade-in 0.7s ease;
+  opacity: 0;
+  visibility: visible;
+  pointer-events: auto;
+  animation: fade-in 0.7s ease forwards;
 }
 
 .page-num {

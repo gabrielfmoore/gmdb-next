@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 export function PersonHeroPane({ imageSrc, name, roles, bio }) {
-  const posterRef = useRef(null);
+  const posterBoxRef = useRef(null);
   const [posterHeight, setPosterHeight] = useState(null);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -16,7 +16,7 @@ export function PersonHeroPane({ imageSrc, name, roles, bio }) {
   }, []);
 
   useEffect(() => {
-    const posterElement = posterRef.current;
+    const posterElement = posterBoxRef.current;
     if (!posterElement) return;
     const measure = () => {
       const h = Math.round(posterElement.getBoundingClientRect().height);
@@ -31,12 +31,14 @@ export function PersonHeroPane({ imageSrc, name, roles, bio }) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6 w-full items-center sm:items-start">
       <div className="w-[300px] sm:w-[40%] shrink-0">
-        <div className="bg-zinc-800 rounded-lg overflow-hidden">
+        <div
+          ref={posterBoxRef}
+          className="relative bg-zinc-800 rounded-lg overflow-hidden aspect-[2/3]"
+        >
           <img
-            ref={posterRef}
             src={imageSrc}
             alt={name}
-            className="block w-full h-auto rounded-lg object-contain"
+            className="absolute inset-0 block w-full h-full rounded-lg object-contain"
           />
         </div>
       </div>

@@ -17,7 +17,7 @@ export function MovieHeroPane({
   showOmdbHint,
   cast,
 }) {
-  const posterRef = useRef(null);
+  const posterBoxRef = useRef(null);
   const [posterHeight, setPosterHeight] = useState(null);
   const [isSmUp, setIsSmUp] = useState(false);
   const [allLoaded, setAllLoaded] = useState(false);
@@ -32,7 +32,7 @@ export function MovieHeroPane({
   }, []);
 
   useEffect(() => {
-    const posterElement = posterRef.current;
+    const posterElement = posterBoxRef.current;
     if (!posterElement) return;
     const measure = () => {
       const h = Math.round(posterElement.getBoundingClientRect().height);
@@ -75,12 +75,14 @@ export function MovieHeroPane({
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6 w-full items-center sm:items-start">
       <div className="w-[300px] sm:w-[40%] shrink-0">
-        <div className="bg-zinc-800 rounded-lg overflow-hidden">
+        <div
+          ref={posterBoxRef}
+          className="relative bg-zinc-800 rounded-lg overflow-hidden aspect-[2/3]"
+        >
           <img
-            ref={posterRef}
             src={src}
             alt={title}
-            className={`block w-full h-auto rounded-lg object-contain transition-opacity duration-200 ${
+            className={`absolute inset-0 block w-full h-full rounded-lg object-contain transition-opacity duration-200 ${
               allLoaded ? "opacity-100" : "opacity-0"
             }`}
           />

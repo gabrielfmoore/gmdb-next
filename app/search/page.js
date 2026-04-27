@@ -275,11 +275,10 @@ function SearchPageContent() {
     <main>
       <div className="sort-dropdown__wrapper">
         <select
-          className="sort-dropdown"
+          className={`sort-dropdown${showPagination ? " sort-dropdown--fade-in" : ""}`}
           value={sortType}
           onChange={(event) => setSort(event.target.value)}
           aria-label="Sort search results"
-          style={{ display: "block" }}
         >
           <option value="default">Sort by...</option>
           <option value="tmdb">TMDB score (High to Low)</option>
@@ -353,9 +352,6 @@ function SearchPageContent() {
 
         <div
           className={`pagination text-black${showPagination ? " pagination--fade-in" : ""}`}
-          style={{
-            display: showPagination ? "flex" : "none",
-          }}
         >
           <button
             type="button"

@@ -6,9 +6,14 @@ import { posterSrc } from "@/lib/movieDisplay";
 function creditedMovieCards(combinedCredits, limit = 24) {
   const cast = Array.isArray(combinedCredits?.cast) ? combinedCredits.cast : [];
   const crew = Array.isArray(combinedCredits?.crew) ? combinedCredits.crew : [];
-  const all = cast
-    .concat(crew)
-    .filter((row) => row && row.media_type === "movie" && Number.isFinite(Number(row.id)));
+  const castMovies = cast.filter(
+    (row) => row && row.media_type === "movie" && Number.isFinite(Number(row.id)),
+  );
+  const crewMovies = crew.filter(
+    (row) => row && row.media_type === "movie" && Number.isFinite(Number(row.id)),
+  );
+  // Prefer cast rows when a movie appears in both cast and crew so we keep character names.
+  const all = castMovies.concat(crewMovies);
 
   const dedupedById = new Map();
   for (const row of all) {
@@ -26,6 +31,7 @@ function creditedMovieCards(combinedCredits, limit = 24) {
       id: Number(row.id),
       title: row.title || "Untitled",
       poster: posterSrc(row.poster_path),
+      character: typeof row.character === "string" && row.character.trim() ? row.character : null,
     }));
 }
 
@@ -96,6 +102,11 @@ export default async function PersonPage({ params }) {
                       />
                     </div>
                     <span className="line-clamp-2">{credit.title}</span>
+                    {credit.character ? (
+                      <span className="mt-1 block line-clamp-2 text-[11px] text-gray-400">
+                        {credit.character}
+                      </span>
+                    ) : null}
                   </Link>
                 ))}
               </div>
