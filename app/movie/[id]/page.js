@@ -35,7 +35,7 @@ export default async function Movie({ params }) {
   const writers = writersFromCrew(movie.credits?.crew);
   const directorPeople = directorsFromCrewList(movie.credits?.crew);
   const writerPeople = writersFromCrewList(movie.credits?.crew);
-  const cast = topCastList(movie.credits?.cast, Number.MAX_SAFE_INTEGER);
+  const cast = topCastList(movie.credits?.cast, 12);
   const recommendations = Array.isArray(movie.recommendations?.results)
     ? movie.recommendations.results.slice(0, 10)
     : [];
