@@ -41,9 +41,14 @@ body {
   overscroll-behavior-x: none;
 }
 
+html {
+  overflow-y: auto;
+}
+
 body {
   position: relative;
   margin: 0 auto;
+  overflow-y: visible;
   background: linear-gradient(
     to bottom,
     rgb(0, 0, 0) 0%,
@@ -126,12 +131,12 @@ nav {
 }
 
 .nav--intro {
-  animation: none;
+  animation: shrink-up 2.5s ease;
 }
 
 @media (max-width: 375px) {
   .nav--intro {
-    animation: none;
+    animation: shrink-up-small 2.5s ease;
   }
 }
 
