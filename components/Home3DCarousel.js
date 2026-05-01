@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
@@ -57,6 +58,10 @@ export function Home3DCarousel({ items }) {
       panels.forEach((panel, index) => {
         const rotation = index * (360 / panels.length) - progress * 360;
         gsap.set(panel, { rotationY: rotation });
+        // Equal z-index + DOM order stacks later panels on top in 2D hit-testing,
+        // ignoring 3D depth. Tie stacking order to how much each panel faces the camera.
+        const facing = Math.cos((rotation * Math.PI) / 180);
+        panel.style.zIndex = String(Math.round(100 + 100 * facing));
       });
     };
 
@@ -151,7 +156,14 @@ export function Home3DCarousel({ items }) {
             className={`img-carousel__panel${index % 2 === 0 ? " is-lower" : ""}`}
           >
             <div data-3d-carousel-content className="img-carousel__item">
-              <img src={item.poster} alt={item.title} className="img-carousel__img" />
+              <Link
+                href={`/movie/${item.id}`}
+                className="img-carousel__link"
+                data-clickable="true"
+                draggable={false}
+              >
+                <img src={item.poster} alt={item.title} className="img-carousel__img" />
+              </Link>
             </div>
           </div>
         ))}

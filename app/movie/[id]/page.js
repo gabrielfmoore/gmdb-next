@@ -10,12 +10,23 @@ import {
   writersFromCrewList,
 } from "@/lib/movieFacts";
 import { fetchOmdbByImdbId, parseOmdbRatings } from "@/lib/omdb";
-import { getMovieByTmdbId } from "@/lib/tmdb";
+import { MovieWatchProviders } from "@/components/MovieWatchProviders";
 import { formatRuntimeMinutes, posterSrc, releaseYear } from "@/lib/movieDisplay";
+import { getMovieByTmdbId, getMovieWatchProviders } from "@/lib/tmdb";
+import { buildWatchProvidersPayload } from "@/lib/watchProviders";
 
 export default async function Movie({ params }) {
   const { id } = await params;
-  const movie = await getMovieByTmdbId(id);
+  const watchRegion = process.env.TMDB_WATCH_REGION || "US";
+
+  const [movie, providersJson] = await Promise.all([
+    getMovieByTmdbId(id),
+    getMovieWatchProviders(id).catch(() => null),
+  ]);
+
+  const watchPayload = providersJson
+    ? buildWatchProvidersPayload(providersJson, watchRegion)
+    : null;
   const title = movie.title || "Movie";
   const src = posterSrc(movie.poster_path);
   const year = releaseYear(movie.release_date);
@@ -109,6 +120,8 @@ export default async function Movie({ params }) {
               </p>
             ) : null}
           </div>
+
+          <MovieWatchProviders watch={watchPayload} />
 
           {recommendations.length > 0 ? (
             <MovieRecommendationsStrip recommendations={recommendations} />

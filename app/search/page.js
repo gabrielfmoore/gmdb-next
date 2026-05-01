@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { NO_POSTER, posterSrc } from "@/lib/movieDisplay";
 
-const MOVIES_PER_PAGE = 6;
+const MOVIES_PER_PAGE = 18;
 
 function handlePosterError(event) {
   const imageElement = event.currentTarget;

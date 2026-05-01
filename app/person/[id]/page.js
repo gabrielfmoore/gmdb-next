@@ -3,7 +3,23 @@ import { PersonHeroPane } from "@/components/PersonHeroPane";
 import { getPersonByTmdbId } from "@/lib/tmdb";
 import { posterSrc } from "@/lib/movieDisplay";
 
-function creditedMovieCards(combinedCredits, limit = 24) {
+function creditRoleLabel(row, source) {
+  const character = typeof row?.character === "string" ? row.character.trim() : "";
+  if (character) return character;
+
+  const job = typeof row?.job === "string" ? row.job.trim() : "";
+  if (job) return job;
+
+  const department = typeof row?.department === "string" ? row.department.trim() : "";
+  if (department) return department;
+
+  if (source === "cast") return "Actor";
+  return null;
+}
+
+// Build credited movie cards with one role label per title:
+// character for acting credits, otherwise crew job/department.
+function creditedMovieCards(combinedCredits, limit = 20) {
   const cast = Array.isArray(combinedCredits?.cast) ? combinedCredits.cast : [];
   const crew = Array.isArray(combinedCredits?.crew) ? combinedCredits.crew : [];
   const castMovies = cast.filter(
@@ -13,7 +29,9 @@ function creditedMovieCards(combinedCredits, limit = 24) {
     (row) => row && row.media_type === "movie" && Number.isFinite(Number(row.id)),
   );
   // Prefer cast rows when a movie appears in both cast and crew so we keep character names.
-  const all = castMovies.concat(crewMovies);
+  const all = castMovies
+    .map((row) => ({ ...row, __creditSource: "cast" }))
+    .concat(crewMovies.map((row) => ({ ...row, __creditSource: "crew" })));
 
   const dedupedById = new Map();
   for (const row of all) {
@@ -31,7 +49,7 @@ function creditedMovieCards(combinedCredits, limit = 24) {
       id: Number(row.id),
       title: row.title || "Untitled",
       poster: posterSrc(row.poster_path),
-      character: typeof row.character === "string" && row.character.trim() ? row.character : null,
+      role: creditRoleLabel(row, row.__creditSource),
     }));
 }
 
@@ -102,9 +120,9 @@ export default async function PersonPage({ params }) {
                       />
                     </div>
                     <span className="line-clamp-2">{credit.title}</span>
-                    {credit.character ? (
+                    {credit.role ? (
                       <span className="mt-1 block line-clamp-2 text-[11px] text-gray-400">
-                        {credit.character}
+                        {credit.role}
                       </span>
                     ) : null}
                   </Link>
